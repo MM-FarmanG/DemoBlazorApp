@@ -1,0 +1,38 @@
+﻿@page "/studentList"
+@using DemoBlazorApp.Components.Data
+@using DemoBlazorApp.Components.Model
+@using DemoBlazorApp.Components.Services
+@inject IUserAuthentication _UserService
+@inject GlobalDataService globldataservice
+
+<h3>Student List</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Class Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in studentlist)
+        {
+            <tr>
+                <td>@student.Name</td>
+                <td>@student.Age</td>
+                <td>@student.ClassName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code{
+    private List<StudentData> studentlist = new List<StudentData>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var key = globldataservice.GetGlobalData();
+        studentlist = await _UserService.GetStudent(key);
+    }
+}

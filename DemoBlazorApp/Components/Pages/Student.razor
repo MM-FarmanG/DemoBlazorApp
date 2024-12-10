@@ -1,0 +1,79 @@
+﻿@page "/student"
+@using DemoBlazorApp.Components.Data
+@using DemoBlazorApp.Components.Layout
+@using DemoBlazorApp.Components.Model
+@using DemoBlazorApp.Components.Services
+@inject GlobalDataService globldataservice
+@inject NavigationManager NavigationManager
+@inject IUserAuthentication _UserService
+
+<EditForm Model="this" OnValidSubmit="CreateStudent" FormName="studentForm">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3 style="font-weight:bold; color:purple">Create Student</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row p-1">
+                            <label for="name" class="col-sm-4 col-form-label">Name:</label>
+                            <div class="col-sm-8">
+                                <InputText class="form-control" @bind-Value="Name" placeholder="Enter Name" />
+                            </div>
+                        </div>
+                        <div class="form-group row p-1">
+                            <label for="age" class="col-sm-4 col-form-label">Age:</label>
+                            <div class="col-sm-8">
+                                <InputText class="form-control" @bind-Value="Age" placeholder="Enter Age" />
+                            </div>
+                        </div>
+                        <div class="form-group row p-1">
+                            <label for="classname" class="col-sm-4 col-form-label">Class Name:</label>
+                            <div class="col-sm-8">
+                                <InputText class="form-control" @bind-Value="ClassName" placeholder="Enter Class Name" />
+                            </div>
+                        </div>
+                        <div class="form-group row p-1">
+                            <div class="col-sm-12 text-center">
+                                <button type="submit" class="btn btn-success">Create</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    public string? Name { get; set; }
+
+    [SupplyParameterFromForm]
+    public string? Age { get; set; }
+
+    [SupplyParameterFromForm]
+    public string? ClassName { get; set; }
+
+    private async Task<bool> CreateStudent()
+    {
+        StudentData std = new StudentData();
+        std.Name = Name;
+        std.Age = Convert.ToInt16(Age);
+        std.ClassName = ClassName;
+
+        var key = globldataservice.GetGlobalData();
+        var result = await _UserService.AddStudent(std, key);
+
+        if (result == true)
+        {
+            NavigationManager.NavigateTo("/studentList");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        return await Task.FromResult(true);
+    }
+}

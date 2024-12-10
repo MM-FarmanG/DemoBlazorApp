@@ -1,0 +1,55 @@
+﻿@* @layout LoginLayout *@
+@page "/login"
+@using DemoBlazorApp.Components.Data
+@using DemoBlazorApp.Components.Layout
+@using DemoBlazorApp.Components.Services
+@inject GlobalDataService globldataservice
+@inject NavigationManager NavigationManager
+@inject IUserAuthentication _UserService
+
+<EditForm Model="this" OnValidSubmit="LoginUser" FormName="RegisterDomainForm">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3 style="font-weight:bold; color:purple">Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row p-1">
+                            <label for="name" class="col-sm-4 col-form-label">Name:</label>
+                            <div class="col-sm-8">
+                                <InputText class="form-control" @bind-Value="Name" placeholder="Enter Name" />
+                            </div>
+                        </div>
+                        <div class="form-group row p-1">
+                            <div class="col-sm-12 text-center">
+                                <button type="submit" class="btn btn-success">Login</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    public string? Name { get; set; }
+
+    private async Task<bool> LoginUser()
+    {
+        var Result = await _UserService.LoginUser(Name);
+        if (Result)
+        {
+            globldataservice.SetGlobalData(Name);
+            NavigationManager.NavigateTo("/home");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        return await Task.FromResult(true);
+    }
+}
